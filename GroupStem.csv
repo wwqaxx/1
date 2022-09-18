@@ -1,0 +1,19 @@
+Sample,Developmental_stage,Treatments
+VConS1,Vegetative growth stage,Con
+VConS2,Vegetative growth stage,Con
+VConS3,Vegetative growth stage,Con
+VHAS1,Vegetative growth stage,HA
+VHAS2,Vegetative growth stage,HA
+VHAS3,Vegetative growth stage,HA
+VFAS1,Vegetative growth stage,FA
+VFAS2,Vegetative growth stage,FA
+VFAS3,Vegetative growth stage,FA
+FConS1,Flowering stage ,Con
+FConS2,Flowering stage ,Con
+FConS3,Flowering stage ,Con
+FHAS1,Flowering stage ,HA
+FHAS2,Flowering stage ,HA
+FHAS3,Flowering stage ,HA
+FFAS1,Flowering stage ,FA
+FFAS2,Flowering stage ,FA
+FFAS3,Flowering stage ,FA
