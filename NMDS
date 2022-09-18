@@ -1,0 +1,25 @@
+
+#Non-metric multi-dimensional scaling (NMDS) analysis
+library(vegan)
+library(ggplot2)
+
+otu <- read.csv("OTU.csv",row.names=1,sep = ",",check.names=F,stringsAsFactors=FALSE)
+otu<-data.frame(t(otu))
+design<- read.csv("totalgroup.csv",sep = ",",header = T,row.names=1,check.names=F,stringsAsFactors=FALSE)
+design$Methods<-factor(design$Methods,levels = c('Con','WSHM','FA'))
+design$Methods_niche<-factor(design$Methods_niche,levels = c('VRoot','VStem','VLeaf','FRoot','FStem','FLeaf'))
+
+vare.mds<-metaMDS(otu,distance='bray')
+point=scores(vare.mds)
+index=merge(design,point,by="row.names",all=F)
+vare.mds
+
+p = ggplot(index, aes(x=NMDS1, y=NMDS2, color=Methods_niche, shape=Methods)) +geom_point(alpha=.7, size=5) +labs(x=paste("NMDS1"),y=paste("NMDS2"), title="")
+p=p+theme(legend.key=element_rect(fill = "transparent"))
+p=p+scale_shape_manual(values=c(15,16,17),name= "Methods")
+p=p+scale_color_manual(values=c("VRoot"="#006400","VStem"="#FF4500","VLeaf"="#0000CD","FRoot"="#66C2A5","FStem"="#FC8D62","FLeaf"="#8DA0CB"),name="Development+Niche")
+p=p+theme(panel.grid = element_blank(), panel.background = element_rect(fill = 'transparent', color = 'black'))
+p=p+theme(legend.position = "right",legend.text = element_text(size = 10, colour = "black"))
+p=p+
+  annotate("text",x=-0.9,y=1.5,parse=TRUE,size=4,label="'Stress:'*0.1438",fontface="italic",colour="black")
+p
