@@ -1,0 +1,19 @@
+library(ggplot2)
+library(ggpubr)
+library(agricolae)
+library(vegan)
+library(RColorBrewer)
+
+map<-read.csv('alpha.csv',row.names = 1,header = T,sep=',',comment.char='',check.names=F)
+p=ggplot(data = map,aes(x=Treatments,y=shannon))+geom_boxplot(fill=rainbow(7)[3])
+p
+anova <- aov(simpson~Treatments,data = map)
+plotdata<-duncan.test(anova,"Treatments",console = TRUE, alpha = 0.05)
+plotdata<-data.frame(id=rownames(plotdata$Treatments),plotdata$Treatments)
+p<-p+geom_text(data = plotdata,aes(x=id,y=7,label=Treatments))
+p=p+xlab("")+ylab("simpson")
+p=p+geom_boxplot(aes(color=Treatments,fill=Treatments))
+p=p+scale_color_brewer(palette ='Dark2')+scale_fill_brewer(palette ='Set3')
+p=p+stat_summary(fun=mean,geom ='point',pch=22,size=2,color='red',fill='blue')
+p=p+scale_x_discrete(limits=c('VCon','VWSHMA','VFA','FCon','FWSHM','FFA'))
+p
