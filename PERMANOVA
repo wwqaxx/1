@@ -1,0 +1,27 @@
+library(vegan)
+library(ggplot2)
+#导入样本和分组文件
+otu<- read.csv("ASV.csv",row.names=1,sep = ",",check.names=F,stringsAsFactors=FALSE)
+otu<-data.frame(t(otu))
+
+design<- read.csv("总分组.csv",sep = ",",header = T,row.names=1,check.names=F,stringsAsFactors=FALSE)
+#读入分组文件
+
+#+表示只考虑单个因素的影响，*表示需计算叠加影响
+#计算处理，部位的影响，发现无论顺序或者是否叠加，结果都一样
+adonis.result=adonis(otu~Treatment*Compartment,data =design,permutations=999,distance = 'bray')
+adonis.result
+adonis.result$aov.tab
+#查看结果
+#adonis结果输出
+#otuput <- data.frame(adonis.result$aov.tab, check.names = FALSE, stringsAsFactors = FALSE)
+#otuput <- cbind(rownames(otuput), otuput)
+#names(otuput) <- c('', 'Df', 'Sums of squares', 'Mean squares', 'F.Model', 'Variation (R2)', 'Pr (>F)')
+#write.table(otuput, file = 'PERMANOVA.result_all.txt', row.names = FALSE, sep = '\t', quote = FALSE, na = '')
+
+
+#使用adnois2，看整体模型是否显著设置参数by="null"，希望变量的顺序不影响结果by="margin"
+#by="terms"按变量顺序进行检验，结果：都是一样
+adonis.result=adonis2(otu~Treatment+Compartment,data =design,permutations=999,distance = 'bray',by="terms")
+adonis.result
+adonis.result$aov.tab
