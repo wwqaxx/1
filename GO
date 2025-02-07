@@ -1,0 +1,46 @@
+
+library(ggplot2)
+dt=read.csv("CK-FG1.csv",header = T,sep=',',comment.char='',check.names=F)
+
+dt = dt[order(dt$Category),]
+dt$Term = factor(dt$Term, levels =  dt$Term) 
+
+
+p1 <- ggplot(dt, aes( x = Term,
+                      y = log10(adjustPvalue), 
+                      fill = Category))+
+  scale_fill_manual(values = c('#C4A2C5','#8DA1CB','#F2B47A'))+ 
+  scale_y_continuous(expand = c(0,0),labels = c(50,40,30,20,10,0)) +
+  theme_bw()+
+  geom_bar(stat = 'identity')+
+  coord_flip()+
+  ylab('-log10(P.adjusted)')+
+  xlab('')
+
+p1
+
+data=read.csv("CK-FG2.csv",header = T,sep=',',comment.char='',check.names=F)
+
+data$Term<- factor(data$Term,levels=c("photosynthesis","photosynthesis, light reaction","response to hydrogen peroxide","protein complex oligomerization","response to abiotic stimulus","thylakoid",
+                                            "photosystem","photosynthetic membrane","photosystem II","thylakoid membrane","plastid","chloroplast",
+                                            "chloroplast thylakoid","plastid thylakoid","photosystem I","chloroplast thylakoid membrane","plastid thylakoid membrane","photosystem II oxygen evolving complex",
+                                            "plastoglobule","protein self-association"))
+
+p2=ggplot(data,aes(x=Term,y=count,fill=change))+
+  scale_y_continuous(expand = c(0,0))+
+  geom_bar(position = "stack",stat="identity")+
+  coord_flip()+
+  theme_bw()+
+  scale_fill_manual(values=c('up'='#DE5F60','down'='#3F69B3'))+
+  labs(x="",y="count",fill="change")+
+  geom_text(aes(label=count, y=count+2),size=5)
+p2
+
+
+p2=p2+theme(axis.text.y = element_blank(),
+            axis.ticks.y = element_blank(),
+            axis.title.y = element_blank())
+p2
+#install.packages("patchwork")
+library(patchwork)
+p1+p2+plot_layout(guides = 'collect')+ plot_layout(widths = c(4, 4))
