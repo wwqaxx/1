@@ -1,0 +1,51 @@
+
+library(vegan)
+library(ggplot2)
+
+fpkm<- read.delim("基因表达量.csv",row.names=1,sep = ",",check.names=F,header=TRUE)
+group<- read.delim("分组.csv",sep = ",",check.names=F,header=TRUE)
+
+
+otu <- t(fpkm)
+
+otu.distance <- vegdist(otu)
+
+pcoa <- cmdscale (otu.distance,eig=TRUE)
+pc12 <- pcoa$points[,1:2]
+pc <- round(pcoa$eig/sum(pcoa$eig)*100,digits=2)#解释度
+
+pc12 <- as.data.frame(pc12)
+pc12$samples <- row.names(pc12)
+
+
+colnames(group) <- c("samples","group")
+df <- merge(pc12,group,by="samples")
+df$group <-factor(df$group,levels = c("Con","T8","T10","Fg","FgT8","FgT10"))
+df_anosim <- anosim(otu.distance,df$group,permutations = 999)
+
+color=c("#FAC03D","#4BC355","#B0B99D","#D12920","#3B7CB3","#615EA8")
+p1<-ggplot(data=df,aes(x=V1,y=V2,color=group))+
+  theme_bw()+
+  geom_point(size=3)+
+  theme(panel.grid = element_blank())+
+  geom_vline(xintercept = 0,lty="dashed",size=0.8)+
+  geom_hline(yintercept = 0,lty="dashed",size=0.8)+
+  labs(x=paste0("PCoA1 (",pc[1],"%)"),
+       y=paste0("PCoA2 (",pc[2],"%)"))+
+  geom_text(aes(x=0.15,y=-0.15),label=paste("R=",round(df_anosim$statistic,3)),color="black",size=4)+
+  geom_text(aes(x=0.15,y=-0.18),label=paste("p=", round(df_anosim$signif,3)),color="black",size=4)+
+  scale_color_manual(values = color) +
+  theme(axis.title.x=element_text(size=12),
+        axis.title.y=element_text(size=12,angle=90),
+        axis.text.y=element_text(size=10),
+        axis.text.x=element_text(size=10),
+        panel.grid=element_blank())
+p1
+
+
+
+p2 <-p1+geom_encircle(aes(group = group,fill=group),expand=0,spread=0.5,s_shape=1,size=3,linetype = 1,alpha=0.2)+
+  scale_fill_manual(values = color)+
+  scale_color_manual(values = color)
+p2
+
