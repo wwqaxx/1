@@ -1,0 +1,18 @@
+library(ggplot2)
+library(ggthemes)
+
+data <- read.table("KEGG T10.csv",row.names = 1,header = T,sep=',',comment.char='',check.names=F)
+data$group<-factor(data$group,levels=c("CK VS T10","CK VS Fg","Fg VS FgT10"))
+data$Egroup<-factor(data$Egroup,levels=c("up","down"))
+#对x轴排序
+
+p=ggplot(data)+geom_point(aes(x=Egroup,y=Pathway,colour=P.adjusted,size=GeneNumber))+
+  scale_colour_gradient(low = 'red', high = 'blue')+
+  theme_light()+
+  theme(axis.text=element_text(size = 12,color = "black"))+
+  theme(axis.title = element_text(size = 20))+
+  facet_grid(rows=vars(level1),cols=vars(group),scales = "free_y",space = "free_y")+
+  xlab("")+
+  scale_size_continuous(range=c(2,8))
+
+p
